@@ -1,6 +1,6 @@
 local parser = {}
 local sh = require 'sh'
-parser.listDisplays = function (test)
+parser.listDisplays = function(test)
 	local displayList = {}
 	local displayInfo = sh.split(sh.command("xrandr")())
 	for _, line in pairs(displayInfo) do
@@ -10,8 +10,10 @@ parser.listDisplays = function (test)
 			table.insert(displayList, {name, tonumber(x), tonumber(y), tonumber(width), tonumber(height)})
 		end
 	end
+
 	return displayList
 end
+
 function parser.listSinks()
 	local sinkList = {}
 	local sinkInfo = sh.split(sh.command("pacmd", "list-sinks")())
@@ -28,8 +30,10 @@ function parser.listSinks()
 			index, id = nil
 		end
 	end
+
 	return sinkList
 end
+
 function parser.listSinkInputs()
 	local sinkInputList = {}
 	local sinkInputInfo = sh.split(sh.command("pacmd", "list-sink-inputs")())
@@ -55,5 +59,7 @@ function parser.listSinkInputs()
 			sinkInputList[#sinkInputList][5] = binary
 		end
 	end
-	return(sinkInputList)
+
+	return sinkInputList
 end
+

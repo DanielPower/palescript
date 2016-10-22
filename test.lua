@@ -1,6 +1,6 @@
 local parser = {}
 local sh = require 'sh'
-parser.listDisplays = function (test)
+parser.listDisplays = function(test)
 	local displayList = {}
 	local displayInfo = sh.split(sh.command("xrandr")())
 	for _, line in pairs(displayInfo) do
@@ -8,7 +8,9 @@ parser.listDisplays = function (test)
 			local _, _, name = string.find(line, "(%a+%-%d+) ")
 			local _, _, width, height, x, y = string.find(line, "(%d+)x(%d+)+(%d+)+(%d+)")
 			table.insert(displayList, {name, tonumber(x), tonumber(y), tonumber(width), tonumber(height)})
+
 	return displayList
+
 function parser.listSinks()
 	local sinkList = {}
 	local sinkInfo = sh.split(sh.command("pacmd", "list-sinks")())
@@ -21,7 +23,9 @@ function parser.listSinks()
 		if index and id then
 			table.insert(sinkList, {index, id})
 			index, id = nil
+
 	return sinkList
+
 function parser.listSinkInputs()
 	local sinkInputList = {}
 	local sinkInputInfo = sh.split(sh.command("pacmd", "list-sink-inputs")())
@@ -41,5 +45,7 @@ function parser.listSinkInputs()
 		if string.find(line, "application.process.binary = ") then
 			_, _, binary = string.find(line, 'application.process.binary%s=%s"(.+)"')
 			sinkInputList[#sinkInputList][5] = binary
-	return(sinkInputList)
+
+	return sinkInputList
+
 return parser

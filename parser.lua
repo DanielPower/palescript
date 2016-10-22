@@ -1,6 +1,9 @@
 #!/bin/lua5.1
 
 local function countIndents(line)
+	if not string.find(line, '.') then
+		return nil
+	end
 	local _, count = string.find(line, '\t+')
 	if count == nil then count = 0 end
 	return count
@@ -15,42 +18,81 @@ local function isStatement(line)
 	end
 end
 
-local input = io.open(arg[1], 'r')
-local output = io.open(arg[2], 'w')
-local code = input:read('*all')
-
-local lines = {}
-for line in string.gmatch(code, "[^\n]+") do
-	table.insert(lines, {text=line})
+local function split(str, pat)
+	local t = {}  -- NOTE: use {n = 0} in Lua-5.0
+	local fpat = "(.-)" .. pat
+	local last_end = 1
+	local s, e, cap = str:find(fpat, 1)
+	while s do
+		if s ~= 1 or cap ~= "" then
+			table.insert(t,cap)
+		end
+		last_end = e+1
+		s, e, cap = str:find(fpat, last_end)
+	end
+	if last_end <= #str then
+		cap = str:sub(last_end)
+		table.insert(t, cap)
+	end
+	return t
 end
 
-for i, line in pairs(lines) do
-	if lines[i-1] then prev = lines[i-1] end
-	line.indent = countIndents(line.text)
+local function endLines(start, finish)
+	output = ""
+	for i=start, finish+1, -1 do
+		for j=i-1, 1, -1 do
+			output = output..'\t'
+		end
+		output = output..'end\n'
+	end
 
-	if prev then
-		if isStatement(prev.text) then
-			if line.indent < (prev.indent + 1) then
-				error("Indentation expected at line "..i)
-			elseif line.indent > (prev.indent + 1) then
-				error("Unexpected indentation at line "..i)
-			else
-				output:write(prev.text..'\n')
-			end
+	return output
+end
+
+local input = io.open(arg[1], 'r')
+local output = io.open(arg[2], 'w')
+
+local text = split(input:read('*all'), '\n')
+local indent = {}
+for i, line in pairs(text) do
+	indent[i] = countIndents(line)
+
+	print(i, isStatement(line))
+end
+
+for curr=1, #text do
+	local prev
+	local blankLines = 0
+	for i=curr-1, 1, -1 do
+		if indent[i] ~= nil then
+			prev = i
+			break
 		else
-			if line.indent > prev.indent then
-				error("Unexpected indentation at line "..i)
-			elseif line.indent == prev.indent then
-				output:write(prev.text..'\n')
+			blankLines = blankLines + 1
+		end
+	end
+
+	if indent[curr] == nil then
+		--output:write('\n')
+	else
+		if text[prev] then
+			output:write(text[prev]..'\n')
+			print(prev, curr)
+			if isStatement(text[prev]) then
+				if indent[curr] ~= indent[prev]+1 then
+					error("Incorrect indentation at "..curr)
+				end
 			else
-				output:write(prev.text..'\n')
-				for i=prev.indent-1, line.indent, -1 do
-					for j=i, 1, -1 do
-						output:write('\t')
-					end
-					output:write('end\n')
+				if indent[curr] > indent[prev] then
+					error("Incorrect indentation at "..curr)
+				elseif indent[curr] < indent[prev] then
+					output:write(endLines(indent[prev], indent[curr]))
 				end
 			end
 		end
+	end
+
+	for i=1, blankLines do
+		output:write('\n')
 	end
 end
