@@ -1,6 +1,7 @@
 local parser = {}
 local sh = require 'sh'
-parser.listDisplays = function(test)
+parser.listDisplays = function (test)
+	foo = foo % bar
 	local displayList = {}
 	local displayInfo = sh.split(sh.command("xrandr")())
 	for _, line in pairs(displayInfo) do
