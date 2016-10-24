@@ -184,3 +184,14 @@ if pass then
 else
 	print("Incorrect indentation at line "..line)
 end
+
+if not arg[2] then
+	local pipe = io.popen('env lua5.1'..outputFile)
+	repeat
+		local c = pipe:read(20)
+		if c then
+			io.write(c)
+			io.flush()
+		end
+	until not c
+end
