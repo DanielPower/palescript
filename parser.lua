@@ -12,16 +12,16 @@ local function countChar(input, char)
 	return count
 end
 
-local function isStatement(line)
-	if string.find(line, '.* do$')
-	or string.find(line, '.* then$')
-	or string.find(line, 'function[%s]-%b()')
-	or string.find(line, 'function%s.+%)$') then
-		if not string.find(line, 'end$') then 									-- FIXME: This will assume all statements on a line have ended if the line ends with 'end', even if there are multiple statements.
-
-			return true
-		end
-	end
+local function statementType(line)
+	if string.find(line, 'if%s.*:$') then
+		return 'if'
+	elseif string.find(line, 'while%s.*:$') then
+		return 'while'
+	elseif string.find(line, 'for%s.*:$') then
+		return 'for'
+	elseif string.find(line, 'function%s.*:$') then
+		return 'function'
+	end									-- FIXME: This will assume all statements on a line have ended if the line ends with 'end', even if there are multiple statements.
 end
 
 local function split(str, pat)
@@ -97,24 +97,19 @@ local function writeOutput(text, output)
 end
 
 local function checkIndentation(text, indent)
-	local indent = {}
-	for i, line in pairs(text) do
-		indent[i] = countChar(line, '^\t+')
-	end
-
 	for curr=2, #text do
 		local prev = prevLine(indent, curr)
 
 		-- Check indentation
 		if indent[curr] then
-			if isStatement(text[prev]) then
+			if statementType(text[prev]) then
 				if indent[curr] ~= indent[prev]+1 then
-					return false, curr
+					return false, "Indent expected at line "..curr
 				end
 			else
 				if indent[curr] > indent[prev] then
 					print(indent[curr], indent[prev])
-					return false, curr
+					return false, "Unexpected indentation at line "..curr
 				end
 			end
 		end
@@ -128,7 +123,7 @@ local function compile(text, indent, ...)
 	local buffer = text
 
 	for _, modifier in pairs(modifiers) do
-		buffer = modifier(text, indent)
+		buffer = modifier(buffer, indent)
 	end
 
 	return buffer
@@ -162,7 +157,7 @@ local function modEndLines(text, indent)
 	return buffer
 end
 
-local function modMathShortcuts(text, indent)
+local function modMath(text, indent)
 	local buffer = {}
 	for curr=1, #text do
 		local line = text[curr]
@@ -174,15 +169,37 @@ local function modMathShortcuts(text, indent)
 	return buffer
 end
 
+local function modStatements(text, indent)
+	local buffer = {}
+
+	for curr=1, #text do
+		local statement = statementType(text[curr])
+		if statement == 'if' then
+			local sub = string.gsub(text[curr], ':$', ' then')
+			table.insert(buffer, sub)
+		elseif (statement == 'for') or (statement == 'while') then
+			local sub = string.gsub(text[curr], ':$', ' do')
+			table.insert(buffer, sub)
+		elseif statement == 'function' then
+			local sub = string.gsub(text[curr], ':$', '')
+			table.insert(buffer, sub)
+		else
+			table.insert(buffer, text[curr])
+		end
+	end
+
+	return buffer
+end
+
 local text, output, indent = loadFiles(arg[1], arg[2])
 -- TODO: Check for spaces, and convert to tabs before doing check
-local pass, line = checkIndentation(text, indent)
+local pass, message = checkIndentation(text, indent)
 
 if pass then
-	local buffer = compile(text, indent, modEndLines, modMathShortcuts)
+	local buffer = compile(text, indent, modEndLines, modMath, modStatements)
 	writeOutput(buffer, output)
 else
-	print("Incorrect indentation at line "..line)
+	print(message)
 end
 
 if not arg[2] then
