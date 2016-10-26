@@ -12,16 +12,32 @@ local function countChar(input, char)
 	return count
 end
 
+local function find(line, pattern)
+	-- Function calls string.find, ignoring commented lines
+	local commentLocation = string.find(line, '%-%-')
+	if commentLocation then
+		local code = string.sub(line, 1, commentLocation - 1)
+		return string.find(code, pattern)
+	else
+		return string.find(line, pattern)
+	end
+end
+
+
 local function statementType(line)
-	if string.find(line, 'if%s.*:$') then
+	if find(line, 'if%s.*:$') then
 		return 'if'
-	elseif string.find(line, 'while%s.*:$') then
+	elseif find(line, 'while%s.*:$') then
 		return 'while'
-	elseif string.find(line, 'for%s.*:$') then
+	elseif find(line, 'for%s.*:$') then
 		return 'for'
-	elseif string.find(line, 'function%s.*:$') then
+	elseif find(line, 'function%s.*:$') then
 		return 'function'
-	end									-- FIXME: This will assume all statements on a line have ended if the line ends with 'end', even if there are multiple statements.
+	elseif find(line, 'else:$') then
+		return 'else'
+	elseif find(line, 'elseif%s.*:$') then
+		return 'elseif'
+	end
 end
 
 local function split(str, pat)
@@ -102,13 +118,14 @@ local function checkIndentation(text, indent)
 
 		-- Check indentation
 		if indent[curr] then
-			if statementType(text[prev]) then
+			local statement = statementType(text[prev])
+			if statement then
 				if indent[curr] ~= indent[prev]+1 then
 					return false, "Indent expected at line "..curr
 				end
 			else
 				if indent[curr] > indent[prev] then
-					print(indent[curr], indent[prev])
+					print(indent[curr], indent[prev], statement)
 					return false, "Unexpected indentation at line "..curr
 				end
 			end
@@ -139,12 +156,17 @@ local function modEndLines(text, indent)
 			table.insert(buffer, text[prev])
 		end
 
-		if not indent[curr] and (curr > #text) then								-- Workaround for last line
-			indent[curr] = 0
+		if indent[curr] and (indent[curr] < indent[prev]) then
+			if not string.find(text[curr], '^\t*else:$') and
+			not string.find(text[curr], '^\t*elseif%s.*:$') then
+				endLines(indent[prev], indent[curr], buffer)
+			else
+				endLines(indent[prev], indent[curr]+1, buffer)
+			end
 		end
 
-		if indent[curr] and (indent[curr] < indent[prev]) then
-			endLines(indent[prev], indent[curr], buffer)
+		if curr == #text+1 then
+			endLines(indent[prev], 0, buffer)
 		end
 
 		if prev == lastPrev then
@@ -180,7 +202,7 @@ local function modStatements(text, indent)
 		elseif (statement == 'for') or (statement == 'while') then
 			local sub = string.gsub(text[curr], ':$', ' do')
 			table.insert(buffer, sub)
-		elseif statement == 'function' then
+		elseif statement == ('function') or statement == ('else') or statement == ('elseif') then
 			local sub = string.gsub(text[curr], ':$', '')
 			table.insert(buffer, sub)
 		else
