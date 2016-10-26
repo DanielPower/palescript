@@ -95,7 +95,6 @@ local function prevLine(indent, line)
 	return prev, blankLines
 end
 
-
 local function loadFiles(inputPath, outputPath)
 	local input = io.open(inputPath, 'r')
 	local text = split(input:read('*all'), '\n')
@@ -203,19 +202,19 @@ end
 local function modStatements(text, indent)
 	local buffer = {}
 
-	for curr=1, #text do
-		local statement = statementType(text[curr])
+	for _, line in pairs(text) do
+		local statement = statementType(line)
 		if statement == 'if' then
-			local sub = string.gsub(text[curr], ':$', ' then')
+			local sub = string.gsub(line, ':$', ' then')
 			table.insert(buffer, sub)
 		elseif (statement == 'for') or (statement == 'while') then
-			local sub = string.gsub(text[curr], ':$', ' do')
+			local sub = string.gsub(line, ':$', ' do')
 			table.insert(buffer, sub)
 		elseif statement == ('function') or statement == ('else') or statement == ('elseif') then
-			local sub = string.gsub(text[curr], ':$', '')
+			local sub = string.gsub(line, ':$', '')
 			table.insert(buffer, sub)
 		else
-			table.insert(buffer, text[curr])
+			table.insert(buffer, line)
 		end
 	end
 
