@@ -1,5 +1,15 @@
 #!/bin/lua5.1
 
+local argparse = require "argparse"
+local parser = argparse("script", "Palescript Compiler")
+
+parser:argument("input", "Input file.")
+parser:option("-o --output", "Output file.")
+parser:option("-i --interpreter", "Interpreter to pass output to.", "lua5.1")
+parser:flag("-e --execute", "Run lua output after conversion.")
+
+local args = parser:parse()
+
 local function countChar(input, char)
 	local _, count
 	if string.find(input, '.') then
@@ -22,7 +32,6 @@ local function find(line, pattern)
 		return string.find(line, pattern)
 	end
 end
-
 
 local function statementType(line)
 	if find(line, 'if%s.*:$') then
@@ -95,7 +104,8 @@ local function loadFiles(inputPath, outputPath)
 	if outputPath then
 		output = io.open(outputPath, 'w')
 	else
-		output = io.open(os.tmpname(), 'w')
+		outputPath = os.tmpname()
+		output = io.open(outputPath, 'w')
 	end
 
 	local indent ={}
@@ -103,7 +113,7 @@ local function loadFiles(inputPath, outputPath)
 		indent[i] = countChar(line, '^\t+')
 	end
 
-	return text, output, indent
+	return text, output, outputPath, indent
 end
 
 local function writeOutput(text, output)
@@ -125,7 +135,6 @@ local function checkIndentation(text, indent)
 				end
 			else
 				if indent[curr] > indent[prev] then
-					print(indent[curr], indent[prev], statement)
 					return false, "Unexpected indentation at line "..curr
 				end
 			end
@@ -213,7 +222,9 @@ local function modStatements(text, indent)
 	return buffer
 end
 
-local text, output, indent = loadFiles(arg[1], arg[2])
+local text, output, outputPath, indent = loadFiles(args.input, args.output)
+local interpreter = args.interpreter
+
 -- TODO: Check for spaces, and convert to tabs before doing check
 local pass, message = checkIndentation(text, indent)
 
@@ -224,8 +235,8 @@ else
 	print(message)
 end
 
-if not arg[2] then
-	local pipe = io.popen('env lua5.1'..outputFile)
+if args.output == nil or args.execute == true then
+	local pipe = io.popen(args.interpreter.." "..outputPath)
 	repeat
 		local c = pipe:read(20)
 		if c then
