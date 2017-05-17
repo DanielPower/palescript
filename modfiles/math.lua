@@ -1,4 +1,4 @@
-return function(text, indent)
+return function(text)
 	local buffer = {}
 	for curr=1, #text do
 		local line = text[curr]

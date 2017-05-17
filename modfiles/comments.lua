@@ -1,4 +1,4 @@
-return function(text, indent)
+return function(text)
 	local buffer = {}
 
 	for _, line in ipairs(text) do

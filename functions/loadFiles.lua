@@ -13,10 +13,5 @@ return function(inputPath, outputPath)
 		output = io.open(outputPath, 'w')
 	end
 
-	local indent = {}
-	for i, line in pairs(text) do
-		indent[i] = countChar(line, '^\t+')
-	end
-
-	return text, output, indent
+	return text, output
 end

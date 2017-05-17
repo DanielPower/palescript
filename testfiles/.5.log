@@ -1,0 +1,24 @@
+local player = {}:
+	vec = {}:,
+		x = 40,
+		y = 30,
+		function draw():,
+			love.graphics.rectangle('fill', player.vec.x, player.vec.y, 32, 32)
+		end
+	},
+	speed = 12,
+}
+function player.draw():
+	love.graphics.rectangle('fill', player.vec.x, player.vec.y, 32, 32)
+end
+function love.update(dt):
+	if love.keyboard.isDown("a"):
+		player.vec.x = x - player.speed
+	end
+	elseif love.keyboard.isDown("d"):
+		player.vec.x = x + player.speed
+	end
+end
+function love.draw():
+	player.draw()
+end

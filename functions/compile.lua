@@ -9,7 +9,11 @@ return function(text, ...)
 				file:write(line..'\n')
 			end
 		end
-		buffer = modifier(buffer)
+		buffer, err = modifier(buffer)
+
+		if err then
+			return buffer, err
+		end
 	end
 
 	return buffer
