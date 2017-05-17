@@ -12,22 +12,31 @@ Palescript is a language that is so close to Lua that any current Lua user can i
 Not much! The biggest difference is that you no longer have to write 'end' at the end of every block. In Palescript, scope is determined by whitespace, similarly to Python. The code snippets below speak for themselves. While both are short, the code written in Palescript is shorter and more readable due to the lack of end lines.
 ```lua
 -- Palescript
-while true do
+while true:
 	print("We're stuck in an infinite loop! D=")
-	for i=1, math.huge do
+	for i=1, math.huge:
 		print("Infinite just got more infinite!!!")
 
 	print("This will never get printed...")
 
-if false then
+if false:
 	print("Nothing?")
+
+myStuff = {}:
+	foo = 3
+	bar = 5
+	stuff = {}:
+		zoo = 7
+		bar = 9
+	ting = 11
+	tar = 32
 
 
 -- Lua
 while true do
 	print("We're stuck in an infinite loop! D=")
 	for i=1, math.huge do
-		print("Infinite just for more infinite!!!")
+		print("Infinite just got more infinite!!!")
 	end
 
 	print("This will never get printed...")
@@ -36,6 +45,17 @@ end
 if false then
 	print("Nothing?")
 end
+
+myStuff = {
+	foo = 3,
+	bar = 5,
+	stuff = {
+		zoo = 7,
+		bar = 9
+	},
+	ting = 11,
+	tar = 32
+}
 ```
 
 ### Really? Is that all?
