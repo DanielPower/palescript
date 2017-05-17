@@ -1,5 +1,11 @@
-local parser = {{}}
-local sh = require 'sh'
+local player = {}:
+	foo = 1
+	bar = 12
+	zoo = {}:
+		far = 25
+		boo = 15
+
+-- This is a test
 if something:
 	foo %= bar
 	local displayList = {}
