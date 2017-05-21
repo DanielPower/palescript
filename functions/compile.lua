@@ -4,7 +4,7 @@ return function(text, ...)
 
 	for index, modifier in pairs(modifiers) do
 		if args.debug then
-			local file = io.open('.'..index..'.log', 'w')
+			local file = io.open(args.input..'.'..index..'.log', 'w')
 			for _, line in ipairs(buffer) do
 				file:write(line..'\n')
 			end

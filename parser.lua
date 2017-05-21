@@ -2,7 +2,7 @@
 -- Setup
 -----------------------------
 -- Arguments
-local argparse = require("argparse")("script", "Palescript Compiler")
+local argparse = require("argparse")("script", "Palescript Parser")
 argparse:argument("input", "Input file.")
 argparse:option("-o --output", "Output file.")
 argparse:option("-i --interpreter", "Interpreter to pass output to.", "lua5.1")
@@ -28,21 +28,18 @@ local modEndlines = require('modfiles/endlines')
 local modComments = require('modfiles/comments')
 
 -- Main Code
----------------------------------------
+-----------------------------
 -- Load input file
 local text, output = loadFiles(args.input, args.output)
 
-if text then
-	local buffer, err = compile(text, modComments, modEmpty, modIndent, modMath, modEndlines, modStatement)
-	if err then
-		print("[Error] "..err)
-	end
-
-	writeOutput(buffer, output)
-else
-	print(message)
+local buffer, err = compile(text, modComments, modEmpty, modIndent, modMath, modEndlines, modStatement)
+if err then
+	print("[Error] "..err)
 end
 
+writeOutput(buffer, output)
+
+-- Execute resulting file using the given Lua interpreter. (Lua 5.1 by default)
 if args.output == nil or args.execute == true then
 	local outputPath = os.tmpname()
 	local pipe = io.popen(args.interpreter.." "..outputPath)
