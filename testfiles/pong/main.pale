@@ -3,26 +3,24 @@ local player1 = {}:
 	y = 100
 	width = 16
 	height = 80
-	speed = 450
+	speed = 500
 
 local player2 = {}:
 	x = 744
 	y = 100
 	width = 16
 	height = 80
-	speed = 450
+	speed = 500
 
 local ball = {}:
-	x = 396
-	y = 296
-	width = 8
-	height = 8
-	xVel = 600
-	yVel = 600
-
-local players = {player1, player2}
+	x = 400
+	y = 300
+	radius = 8
+	xVel = 250
+	yVel = 250
 
 function love.update(dt):
+	print(ball.x, ball.y)
 	-- Player 1 Movement
 	if love.keyboard.isDown('w'):
 		player1.y -= player1.speed*dt
@@ -36,18 +34,27 @@ function love.update(dt):
 		player2.y += player2.speed*dt
 
 	-- Ball Movement
-	ball.x += ball.xVel
-	ball.y += ball.yVel
+	ball.x += ball.xVel*dt
+	ball.y += ball.yVel*dt
 
-	for _, player in ipairs(players) do
-		if (ball.x + ball.width) > player.x
-		and ball.x < (player.x + player.width):
-			ball.xVel = -ball.xVel
+	if (ball.x - ball.radius) < (player1.x + player1.width)
+	and (ball.x + ball.radius) > player1.x
+	and (ball.y + ball.radius) > player1.y
+	and (ball.y - ball.radius) < (player1.y + player1.height):
+		ball.xVel = -ball.xVel
 
-		if (ball.y + ball.height) > player.y
-		and ball.y < (player.y + player.width):
-			ball.yVel = -ball.yVel
+	if (ball.x + ball.radius) > player2.x
+	and (ball.x - ball.radius) < (player2.x + player2.width)
+	and (ball.y + ball.radius) > player2.y
+	and (ball.y - ball.radius) < (player2.y + player2.height):
+		ball.xVel = -ball.xVel
+
+	if ball.y - ball.radius < 0:
+		ball.yVel = -ball.yVel
+	elseif ball.y + ball.radius > 600:
+		ball.yVel = -ball.yVel
 
 function love.draw():
 	love.graphics.rectangle('fill', player1.x, player1.y, player1.width, player1.height)
 	love.graphics.rectangle('fill', player2.x, player2.y, player2.width, player2.height)
+	love.graphics.circle('fill', ball.x, ball.y, ball.radius)
