@@ -1,11 +1,8 @@
 return function(text)
-	local buffer = {}
 	for curr=1, #text do
-		local line = text[curr]
-		line = line:gsub("([%w_]+)%s([%+%-%*/%%])=", "%1 = %1 %2")
-		line = line:gsub("!=", "~=")
-		table.insert(buffer, line)
+		text[curr] = text[curr]:gsub("^(\t*)(%s*.+)%s([%+%-%*/%%])=", "%1%2 = %2 %3")
+		text[curr] = text[curr]:gsub("!=", "~=")
 	end
 
-	return buffer
+	return text
 end
