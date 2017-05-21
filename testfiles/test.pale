@@ -4,8 +4,13 @@ local player = {}:
 	zoo = {}:
 		far = 25
 		boo = 15
-		am = function():
+		function am(foo, bar):
 			foo = bar
+			jay = {}:
+				function coocoo(foo, fart):
+					for i=1, #test:
+						print("HELLO WORLD")
+				steve = "s.t.e.v.e"
 			return foo
 		jk = 5
 

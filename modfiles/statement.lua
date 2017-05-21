@@ -3,8 +3,8 @@ local statementType = require('functions/statementType')
 return function(text)
 	local buffer = {}
 
-	for _, line in ipairs(text) do
-		local statement = statementType(line)
+	for index, line in ipairs(text) do
+		local statement = statementType(text, index)
 		if statement == 'if'
 		or statement == 'elseif' then
 			local sub = line:gsub(':$', ' then')

@@ -9,6 +9,7 @@ local modIndent = require('modfiles/indent')
 local modStatement = require('modfiles/statement')
 local modEndlines = require('modfiles/endlines')
 local modComments = require('modfiles/comments')
+local modTableFunction = require('modfiles/tableFunction')
 
 -- Arguments
 argparse:argument("input", "Input file.")

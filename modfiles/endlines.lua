@@ -14,8 +14,9 @@ return function(text)
 			if indent[curr] < indent[curr-1] then
 				local start = indent[curr-1]-1
 				local finish
-				if statementType(text[curr]) == "else"
-				or statementType(text[curr]) == "elseif" then
+				local type = statementType(text, curr)
+				if type == "else"
+				or type == "elseif" then
 					finish = indent[curr]+1
 				else
 					finish = indent[curr]
@@ -43,7 +44,7 @@ return function(text)
 			end
 		end
 
-		local type = statementType(text[curr])
+		local type = statementType(text, curr)
 		if type == "if" or type == "for" or type == "function" then
 			block[indent[curr]] = "end"
 		elseif type == "table" then
@@ -51,7 +52,7 @@ return function(text)
 		end
 
 		if block[indent[curr]-1] == "table"
-		and statementType(text[curr]) ~= 'function' then
+		and statementType(text, curr) ~= 'function' then
 			table.insert(buffer, text[curr]..',')
 		else
 			table.insert(buffer, text[curr])

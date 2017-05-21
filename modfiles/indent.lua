@@ -1,5 +1,3 @@
-local statementType = require('functions/statementType')
-
 return function(text)
 	local buffer = {}
 	local tabchar = nil

@@ -4,8 +4,16 @@ local player = {
 	zoo = {
 		far = 25,
 		boo = 15,
-		am = function()
+		am = function(foo, bar)
 			foo = bar
+			jay = {
+				coocoo = function(foo, fart)
+					for i=1, #test do
+						print("HELLO WORLD")
+					end
+				end,
+				steve = "s.t.e.v.e",
+			}
 			return foo
 		end,
 		jk = 5,
