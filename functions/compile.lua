@@ -2,7 +2,7 @@ return function(text, ...)
 	local modifiers = {...}
 	local buffer = text
 
-	for index, modifier in pairs(modifiers) do
+	for index, modifier in ipairs(modifiers) do
 		buffer, err = modifier(buffer)
 
 		if args.debug then
@@ -11,7 +11,7 @@ return function(text, ...)
 				file:write(line..'\n')
 			end
 		end
-		
+
 		if err then
 			return buffer, err
 		end
