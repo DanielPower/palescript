@@ -4,6 +4,10 @@ local player = {}:
 	zoo = {}:
 		far = 25
 		boo = 15
+		am = function():
+			foo = bar
+			return foo
+		jk = 5
 
 -- This is a test
 if something:

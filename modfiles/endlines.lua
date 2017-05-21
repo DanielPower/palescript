@@ -26,7 +26,11 @@ return function(text)
 						str = str.."\t"
 					end
 					if block[i] == "end" then
-						str = str.."end"
+						if block[i-1] == "table" then
+							str = str.."end,"
+						else
+							str = str.."end"
+						end
 					elseif block[i] == "table" then
 						if block[i-1] == "table" then
 							str = str.."},"
@@ -46,7 +50,8 @@ return function(text)
 			block[indent[curr]] = "table"
 		end
 
-		if block[indent[curr]-1] == "table" then
+		if block[indent[curr]-1] == "table"
+		and statementType(text[curr]) ~= 'function' then
 			table.insert(buffer, text[curr]..',')
 		else
 			table.insert(buffer, text[curr])

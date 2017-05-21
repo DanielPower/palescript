@@ -4,6 +4,11 @@ local player = {
 	zoo = {
 		far = 25,
 		boo = 15,
+		am = function()
+			foo = bar
+			return foo
+		end,
+		jk = 5,
 	},
 }
 if something then

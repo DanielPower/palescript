@@ -5,7 +5,8 @@ return function(line)
 		return 'while'
 	elseif line:find('^\t*for%s.*:$') then
 		return 'for'
-	elseif line:find('^\t*function%s.*:$') then
+	elseif line:find('^\t*function%s.*:$')
+	or line:find('^\t*.*=%s*function%s*(.*):$') then
 		return 'function'
 	elseif line:find('^\t*else:$') then
 		return 'else'
