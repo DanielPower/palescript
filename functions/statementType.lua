@@ -1,17 +1,19 @@
 return function(line)
-	if line:find('if%s.*:$') then
+	if line:find('^\t*if%s.*:$') then
 		return 'if'
-	elseif line:find('while%s.*:$') then
+	elseif line:find('^\t*while%s.*:$') then
 		return 'while'
-	elseif line:find('for%s.*:$') then
+	elseif line:find('^\t*for%s.*:$') then
 		return 'for'
-	elseif line:find('function%s.*:$') then
+	elseif line:find('^\t*function%s.*:$') then
 		return 'function'
-	elseif line:find('else:$') then
+	elseif line:find('^\t*else:$') then
 		return 'else'
-	elseif line:find('elseif%s.*:$') then
+	elseif line:find('^\t*elseif%s.*:$') then
 		return 'elseif'
 	elseif line:find('{}:,$') or line:find('{}:$') then
 		return 'table'
+	elseif line:find('^\t*return%s.*$') then
+		return 'return'
 	end
 end

@@ -15,6 +15,8 @@ if something then
 			local _, _, name = string.find(line, "(%a+%-%d+) ")
 			local _, _, width, height, x, y = string.find(line, "(%d+)x(%d+)+(%d+)+(%d+)")
 			table.insert(displayList, {name, tonumber(x), tonumber(y), tonumber(width), tonumber(height)})
+		elseif foo == bar then
+			print("oop")
 		end
 	end
 	return displayList

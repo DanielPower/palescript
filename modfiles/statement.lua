@@ -5,13 +5,15 @@ return function(text)
 
 	for _, line in ipairs(text) do
 		local statement = statementType(line)
-		if statement == 'if' then
+		if statement == 'if'
+		or statement == 'elseif' then
 			local sub = line:gsub(':$', ' then')
 			table.insert(buffer, sub)
 		elseif (statement == 'for') or (statement == 'while') then
 			local sub = line:gsub(':$', ' do')
 			table.insert(buffer, sub)
-		elseif (statement == 'function') or (statement == 'else') or (statement == 'elseif') then
+		elseif (statement == 'function')
+		or (statement == 'else') then
 			local sub = line:gsub(':$', '')
 			table.insert(buffer, sub)
 		elseif statement == 'table' then

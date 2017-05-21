@@ -12,7 +12,15 @@ return function(text)
 	for curr=1, #text do
 		if curr > 1 then
 			if indent[curr] < indent[curr-1] then
-				for i=indent[curr-1]-1, indent[curr], -1 do
+				local start = indent[curr-1]-1
+				local finish
+				if statementType(text[curr]) == "else"
+				or statementType(text[curr]) == "elseif" then
+					finish = indent[curr]+1
+				else
+					finish = indent[curr]
+				end
+				for i=start, finish, -1 do
 					local str = ""
 					for j=1, i do
 						str = str.."\t"
