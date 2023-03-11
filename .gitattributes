@@ -1,0 +1,2 @@
+argparse.lua linguist-vendored
+testfiles/**/*.lua linguist-generated
